@@ -107,8 +107,7 @@ const tierraglowMaterial = new THREE.ShaderMaterial({
 
 const tierraGlow = new THREE.Mesh( new THREE.SphereGeometry(4.5, 32, 16), tierraglowMaterial);
 tierraGlow.scale.multiplyScalar(1.2);
-tierraGlow.position.x = 40;
-tierraGlow.position.z = 40;
+tierraGlow.position.x = 150;
 scene.add(tierraGlow);
 
 const moonGlow = new THREE.Mesh( new THREE.SphereGeometry(15,32,16), solglowMaterial);
@@ -160,7 +159,7 @@ const mercurioMat = new THREE.TextureLoader().load('https://images-wixmp-ed30a86
 const tierraMat = new THREE.TextureLoader().load('https://static.turbosquid.com/Preview/2014/08/01__12_04_02/words10k.jpg4BFEB116-5502-4949-ABF4D77CB50C417B.jpgOriginal.jpg');
 const saturnoMat = new THREE.TextureLoader().load('https://tse4.mm.bing.net/th?id=OIP.GFEc1rnPZX09j_rlhSaszQHaDt&pid=Api');
 const anilloSatMat = new THREE.TextureLoader().load('https://tse4.mm.bing.net/th?id=OIP.GFEc1rnPZX09j_rlhSaszQHaDt&pid=Api');
-const jupiterMat = new THREE.TextureLoader().load('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/efbcbef1-b203-4367-9335-2720d26f49ec/dbtfk1b-f4544735-d0b1-45ee-bc8b-2a6344ce3c0f.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvZWZiY2JlZjEtYjIwMy00MzY3LTkzMzUtMjcyMGQyNmY0OWVjXC9kYnRmazFiLWY0NTQ0NzM1LWQwYjEtNDVlZS1iYzhiLTJhNjM0NGNlM2MwZi5qcGcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.cdM0hNCF4ZqT9U2gCKjHI-jHusnYaz6OAaTo5pnnuVU');
+const jupiterMat = new THREE.TextureLoader().load('https://thumbs.dreamstime.com/b/texture-surface-jupiter-elements-image-furnished-nasa-152406745.jpg');
 const particlesMaterial = new THREE.PointsMaterial({
     size: 0.05
 })
@@ -173,15 +172,13 @@ const saturno = new THREE.Mesh(saturnoGeo, new THREE.MeshBasicMaterial({map: sat
 const anilloSat = new THREE.Mesh(anilloSatGeo, new THREE.MeshBasicMaterial({map: anilloSatMat, transparent: true, opacity: 0.7}))
 const jupiter = new THREE.Mesh(jupiterGeo, new THREE.MeshBasicMaterial({map: jupiterMat}))
 const galaxy = new THREE.Points(galaxyGeo, particlesMaterial)
-mercurio.position.x = -20
-mercurio.position.z = 4
-venus.position.x = 27
-venus.position.z = 20
-tierra.position.x = 40
-tierra.position.z = 40
-saturno.position.z = 150
-anilloSat.position.z = 150
-jupiter.position.x = -90
+mercurio.position.x = 57
+venus.position.x = 108
+tierra.position.x = 150
+saturno.position.x = 1430
+anilloSat.position.x = 1430
+anilloSat.rotation.x = 90* Math.PI / 180
+jupiter.position.x = 779
 
 //add mesh to scene
 //scene.add(skybox)
@@ -329,27 +326,26 @@ function animate ()
 
     // Update objects
     sol.rotation.y = .2*elapsedTime
-    mercurio.rotation.y = 2*elapsedTime
-    venus.rotation.y = 2*elapsedTime
-    tierra.rotation.y = 2*elapsedTime
-    saturno.rotation.y = 2*elapsedTime
-    anilloSat.rotation.z = 2*elapsedTime
-    anilloSat.rotation.x = 0.5*elapsedTime
-    jupiter.rotation.y = 2*elapsedTime
+    mercurio.rotation.y = 1.083*elapsedTime
+    venus.rotation.y = .652*elapsedTime
+    tierra.rotation.y = .1574*elapsedTime
+    saturno.rotation.y = 3.6840*elapsedTime
+    anilloSat.rotation.z = 4*elapsedTime
+    jupiter.rotation.y = 4.5583*elapsedTime
 
-    matrix.makeRotationY(.01);
-    matrix2.makeRotationY(.1);
-    matrix3.makeRotationY(.1)
-    matrix4.makeRotationY(.1)
-    matrix5.makeRotationY(.1)
-    matrix6.makeRotationY(.1)
-    mercurio.position.applyMatrix4(matrix2);
-    venus.position.applyMatrix4(matrix);
-    tierra.position.applyMatrix4(matrix);
-    saturno.position.applyMatrix4(matrix);
-    anilloSat.position.applyMatrix4(matrix);
-    jupiter.position.applyMatrix4(matrix);
-    tierraGlow.position.applyMatrix4(matrix);
+    matrix.makeRotationY(.04787);
+    matrix2.makeRotationY(.03502);
+    matrix3.makeRotationY(.02978)
+    matrix4.makeRotationY(.024077)
+    matrix5.makeRotationY(.01307)
+    matrix6.makeRotationY(.00969)
+    mercurio.position.applyMatrix4(matrix);
+    venus.position.applyMatrix4(matrix2);
+    tierra.position.applyMatrix4(matrix3);
+    saturno.position.applyMatrix4(matrix4);
+    anilloSat.position.applyMatrix4(matrix4);
+    jupiter.position.applyMatrix4(matrix5);
+    tierraGlow.position.applyMatrix4(matrix3);
 
     // Update Orbital Controls
     // controls.update()
