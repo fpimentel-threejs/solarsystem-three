@@ -2,9 +2,6 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
-import { EffectComposer } from "/node_modules/three/examples/jsm/postprocessing/EffectComposer.js";
-import { RenderPass } from "/node_modules/three/examples/jsm/postprocessing/RenderPass.js";
-import { UnrealBloomPass } from "/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { PointLightHelper } from 'three';
 import {GUI} from 'dat.gui';
 
@@ -24,10 +21,6 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 {
-  const color = 0xFFFFFF;  // white
-  const near = 10;
-  const far = 100;
-  //scene.fog = new THREE.Fog(color, near, far);
 }
 
 /**
@@ -91,21 +84,22 @@ const solglowMaterial = new THREE.ShaderMaterial({
     transparent: true
 });
 
+//earth atmosphere shader
 const tierraglowMaterial = new THREE.ShaderMaterial({
     uniforms: {
-        "c":   { type: "f", value: 1.5 },
-        "p":   { type: "f", value: 3 },
+        "c":   { type: "f", value: .05 },
+        "p":   { type: "f", value: .005 },
         glowColor: { type: "c", value: new THREE.Color(0x85a4ff) },
         viewVector: { type: "v3", value: camera.position }
     },
-    vertexShader:   vertexShader,
+    vertexShader: vertexShader,
     fragmentShader: fragmentShader,
     side: THREE.FrontSide,
     blending: THREE.AdditiveBlending,
     transparent: true
 });
 
-const tierraGlow = new THREE.Mesh( new THREE.SphereGeometry(4.5, 32, 16), tierraglowMaterial);
+const tierraGlow = new THREE.Mesh( new THREE.SphereGeometry(.6371, 32, 16), tierraglowMaterial);
 tierraGlow.scale.multiplyScalar(1.2);
 tierraGlow.position.x = 150;
 scene.add(tierraGlow);
@@ -114,34 +108,16 @@ const moonGlow = new THREE.Mesh( new THREE.SphereGeometry(15,32,16), solglowMate
 moonGlow.scale.multiplyScalar(1.2);
 //scene.add( moonGlow );
 
-//skybox array
-/*
-let skyboxArray = [];
-let texture_ft = new THREE.TextureLoader().load('assets/skyboxx/spacebox_ft.png');
-let texture_bk = new THREE.TextureLoader().load('assets/skyboxx/spacebox_bk.png');
-let texture_up = new THREE.TextureLoader().load('assets/skyboxx/spacebox_up.png');
-let texture_dn = new THREE.TextureLoader().load('assets/skyboxx/spacebox_dn.png');
-let texture_rt = new THREE.TextureLoader().load('assets/skyboxx/spacebox_rt.png');
-let texture_lf = new THREE.TextureLoader().load('assets/skyboxx/spacebox_lf.png');
-
-skyboxArray.push(new THREE.MeshBasicMaterial({map: texture_ft}));
-skyboxArray.push(new THREE.MeshBasicMaterial({map: texture_bk}));
-skyboxArray.push(new THREE.MeshBasicMaterial({map: texture_up}));
-skyboxArray.push(new THREE.MeshBasicMaterial({map: texture_dn}));
-skyboxArray.push(new THREE.MeshBasicMaterial({map: texture_rt}));
-skyboxArray.push(new THREE.MeshBasicMaterial({map: texture_lf}));
-
-for(let i = 0; i < 6; i++){
-    skyboxArray[i].side = THREE.BackSide;
-}*/
-
 //geometry
-const tierraGeo = new THREE.SphereGeometry(5,32,16);
-const saturnoGeo = new THREE.SphereGeometry(9,32,16);
-const anilloSatGeo = new THREE.TorusGeometry(14, 2, 2, 16);
+const solGeo = new THREE.SphereGeometry(6.96,32,16);
+const mercurioGeo = new THREE.SphereGeometry(.244,32,16);
+const venusGeo = new THREE.SphereGeometry( .6052, 32, 16);
+const tierraGeo = new THREE.SphereGeometry(.6371,32,16);
+const jupiterGeo = new THREE.SphereGeometry(6.9911, 32, 16);
+const saturnoGeo = new THREE.SphereGeometry(.58232,32,16);
+const anilloSatGeo = new THREE.TorusGeometry(.95, .15, 2, 16);
 const galaxyGeo = new THREE.TorusGeometry(7.847, 8.1774, 3, 16, 6.28318);
 const particlesGeometry = new THREE.BufferGeometry;
-const jupiterGeo = new THREE.SphereGeometry(10, 32, 16);
 
 const particlesCnt = 4000;
 const posArray = new Float32Array(particlesCnt * 3);
@@ -152,8 +128,13 @@ for(let i = 0; i < particlesCnt * 3; i++){
 
 particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3))
 
-//materials to map
+//sun shader
+
+
 const solMat = new THREE.TextureLoader().load('https://vignette.wikia.nocookie.net/planet-texture-maps/images/1/11/Sun-0.jpg/revision/latest/scale-to-width-down/555?cb=20180114104709');
+
+
+//materials to map
 const venusMat = new THREE.TextureLoader().load('https://vignette.wikia.nocookie.net/planet-texture-maps/images/8/80/Venusclouds.jpg/revision/latest/scale-to-width-down/466?cb=20180114085726');
 const mercurioMat = new THREE.TextureLoader().load('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/6e527eb9-99dc-4554-9ea2-dd0e84e79860/dcklc0u-feeae0dc-f164-436a-8e75-5c9a7f3e3c71.png/v1/fill/w_1264,h_632,q_70,strp/mercury_texture_map_used_by_solar_walk_2_by_bob3studios_dcklc0u-pre.jpg')
 const tierraMat = new THREE.TextureLoader().load('https://static.turbosquid.com/Preview/2014/08/01__12_04_02/words10k.jpg4BFEB116-5502-4949-ABF4D77CB50C417B.jpgOriginal.jpg');
@@ -164,9 +145,9 @@ const particlesMaterial = new THREE.PointsMaterial({
     size: 0.05
 })
 // Mesh
-const sol = new THREE.Mesh(new THREE.SphereGeometry(15,32,16),new THREE.MeshBasicMaterial({map: solMat}))
-const mercurio = new THREE.Mesh(new THREE.SphereGeometry(1.5,32,16), new THREE.MeshBasicMaterial({map: mercurioMat}))
-const venus = new THREE.Mesh(new THREE.SphereGeometry(2.2, 32, 16), new THREE.MeshBasicMaterial({map: venusMat}))
+const sol = new THREE.Mesh( solGeo, new THREE.MeshBasicMaterial({map: solMat}))
+const mercurio = new THREE.Mesh( mercurioGeo, new THREE.MeshBasicMaterial({map: mercurioMat}))
+const venus = new THREE.Mesh(venusGeo, new THREE.MeshBasicMaterial({map: venusMat}))
 const tierra = new THREE.Mesh( tierraGeo,new THREE.MeshBasicMaterial({map: tierraMat}))
 const saturno = new THREE.Mesh(saturnoGeo, new THREE.MeshBasicMaterial({map: saturnoMat}))
 const anilloSat = new THREE.Mesh(anilloSatGeo, new THREE.MeshBasicMaterial({map: anilloSatMat, transparent: true, opacity: 0.7}))
@@ -178,10 +159,10 @@ tierra.position.x = 150
 saturno.position.x = 1430
 anilloSat.position.x = 1430
 anilloSat.rotation.x = 90* Math.PI / 180
+anilloSat.rotation.y = 15* Math.PI / 180
 jupiter.position.x = 779
 
 //add mesh to scene
-//scene.add(skybox)
 scene.add(sol)
 scene.add(mercurio)
 scene.add(venus)
@@ -191,63 +172,47 @@ scene.add(anilloSat)
 scene.add(jupiter)
 scene.add(galaxy)
 
+//gui vars
+const planetBools = {
+    mercury: false,
+    venus: false,
+    earth: false,
+    jupiter: false,
+    saturn: false,
+    reset: false
+}
+
+function setChecked( prop ){
+    for (let param in planetBools){
+        planetBools[param] = false;
+    }
+    planetBools[prop] = true;
+}
+
 //gui controls
-gui.add(sol.scale, 'z', 0, 2).name('Scale Z Axis');
-gui.add(sol.material, 'wireframe');
+gui.add(planetBools, 'mercury').name('Mercury').listen().onChange(function(){setChecked("mercury")});
+gui.add(planetBools, 'venus').name('Venus').listen().onChange(function(){setChecked("venus")});
+gui.add(planetBools, 'earth').name('Earth').listen().onChange(function(){setChecked("earth")});
+gui.add(planetBools, 'jupiter').name('Jupiter').listen().onChange(function(){setChecked("jupiter")});
+gui.add(planetBools, 'saturn').name('Saturn').listen().onChange(function(){setChecked("saturn")});
+gui.add(planetBools, 'reset').name('Free Cam').listen().onChange(function(){setChecked("reset")});;
+
 
 //add starfield to scene
 function addStar() {
-  const stargeometry = new THREE.SphereGeometry(0.25, 24, 24);
+  const stargeometry = new THREE.SphereGeometry(0.5, 24, 24);
   const starmaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
   const star = new THREE.Mesh(stargeometry, starmaterial);
 
   const [x, y, z] = Array(3)
     .fill()
-    .map(() => THREE.MathUtils.randFloatSpread(500));
+    .map(() => THREE.MathUtils.randFloatSpread(3000));
 
   star.position.set(x, y, z);
   scene.add(star);
 }
 
-Array(1000).fill().forEach(addStar);
-
-//sprite for glow efffect
-/*
-var spriteMaterial = new THREE.SpriteMaterial( 
-{ 
-	map: new THREE.ImageUtils.loadTexture( 'images/glow.png' ), 
-	useScreenCoordinates: false, alignment: THREE.SpriteAlignment.center,
-	color: 0x0000ff, transparent: false, blending: THREE.AdditiveBlending
-});
-var sprite = new THREE.Sprite( spriteMaterial );
-sprite.scale.set(200, 200, 1.0);
-sol.add(sprite);
-*/
-
-//raycasting implementation
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-
-function onPointerMove(event){
-
-    pointer.x = (event.clientX / window.innerWidth)* 2 - 1;
-    pointer.y = -(event.clientY / window.innerHeight)*2 +1;
-
-}
-
-//raycasting work in progress
-/*function rayRender(){
-
-    //raycaster will cast ray from mouse to camera
-    raycaster.setFromCamera( pointer, camera);
-
-    const intersects = raycaster.intersectObjects(scene.children);
-
-    for(let i = 0; i < intersects.length; i++){
-        intersects[i].object.material.opacity.set(0.5);
-    }
-
-}*/
+Array(6000).fill().forEach(addStar);
 
 // Lights
 var pointLight = new THREE.PointLight(0xFF0000, .5,10, 2)
@@ -258,25 +223,7 @@ pointLight.position.z = 0
 scene.add(pointLight)
 
 var pointLightHelper = new THREE.PointLightHelper(pointLight, 20); 
-scene.add( pointLightHelper);
-
-//bloom pass
-const renderScene = new RenderPass(scene,camera);
-const bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1.5,
-    0.4,
-    0.85
-);
-bloomPass.threshold = 0;
-bloomPass.strength = 2;
-bloomPass.radius = 0;
-
-const bloomComposer = new EffectComposer(renderer);
-bloomComposer.setSize(window.innerWidth, window.innerHeight);
-bloomComposer.renderToScreen = true;
-bloomComposer.addPass(renderScene);
-bloomComposer.addPass(bloomPass);
+//scene.add( pointLightHelper);
 
 const color = new THREE.Color('#FDB813');
 const geometry = new THREE.IcosahedronGeometry(1, 15);
@@ -302,8 +249,6 @@ window.addEventListener('resize', () =>
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-    bloomComposer.setSize(window.innerWidth, window.innerHeight);
 })
 
 // Controls
@@ -314,31 +259,80 @@ controls.enableDamping = true
  * Animate
  */
 
+export function updateCamera(){
+    {alert('hello!')}
+}
+
 const clock = new THREE.Clock()
 
 function animate ()
 {
 
     //camera.layers.set(1);
-    bloomComposer.render();
 
     const elapsedTime = clock.getElapsedTime()
 
-    // Update objects
-    sol.rotation.y = .2*elapsedTime
-    mercurio.rotation.y = 1.083*elapsedTime
-    venus.rotation.y = .652*elapsedTime
-    tierra.rotation.y = .1574*elapsedTime
-    saturno.rotation.y = 3.6840*elapsedTime
-    anilloSat.rotation.z = 4*elapsedTime
-    jupiter.rotation.y = 4.5583*elapsedTime
+    //update camera
+    if (planetBools.mercury == true){
 
-    matrix.makeRotationY(.04787);
-    matrix2.makeRotationY(.03502);
-    matrix3.makeRotationY(.02978)
-    matrix4.makeRotationY(.024077)
-    matrix5.makeRotationY(.01307)
-    matrix6.makeRotationY(.00969)
+        let offset = new THREE.Vector3(mercurio.position.x , mercurio.position.y, mercurio.position.z);
+
+        camera.position.lerp(offset, .2);
+
+        camera.lookAt(mercurio.position);
+    }
+
+    if (planetBools.venus == true){
+
+        let offset = new THREE.Vector3(venus.position.x , venus.position.y, venus.position.z);
+
+        camera.position.lerp(offset, .2);
+
+        camera.lookAt(venus.position);
+    }
+
+    if (planetBools.earth == true){
+
+        let offset = new THREE.Vector3(tierra.position.x , tierra.position.y, tierra.position.z);
+
+        camera.position.lerp(offset, .2);
+
+        camera.lookAt(tierra.position);
+    }
+
+    if (planetBools.jupiter == true){
+
+        let offset = new THREE.Vector3(jupiter.position.x , jupiter.position.y, jupiter.position.z);
+
+        camera.position.lerp(offset, .05);
+
+        camera.lookAt(jupiter.position);
+    }
+
+    if (planetBools.saturn == true){
+
+        let offset = new THREE.Vector3(saturno.position.x , saturno.position.y, saturno.position.z);
+
+        camera.position.lerp(offset, .98);
+
+        camera.lookAt(saturno.position);
+    }
+
+    // Update objects
+    sol.rotation.y = .02*elapsedTime
+    mercurio.rotation.y = .1083*elapsedTime
+    venus.rotation.y = .0652*elapsedTime
+    tierra.rotation.y = .01574*elapsedTime
+    saturno.rotation.y = .36840*elapsedTime
+    anilloSat.rotation.z = .4*elapsedTime
+    jupiter.rotation.y = .45583*elapsedTime
+
+    matrix.makeRotationY(.004787);
+    matrix2.makeRotationY(.003502);
+    matrix3.makeRotationY(.002978)
+    matrix4.makeRotationY(.0024077)
+    matrix5.makeRotationY(.001307)
+    matrix6.makeRotationY(.000969)
     mercurio.position.applyMatrix4(matrix);
     venus.position.applyMatrix4(matrix2);
     tierra.position.applyMatrix4(matrix3);
@@ -348,9 +342,6 @@ function animate ()
     tierraGlow.position.applyMatrix4(matrix3);
 
     // Update Orbital Controls
-    // controls.update()
-
-    //rayRender()
 
     // Render
     renderer.render(scene, camera);
@@ -360,6 +351,3 @@ function animate ()
 }
 
 animate()
-
-//window.addEventListener('pointermove', onPointerMove);
-//window.requestAnimationFrame(rayRender);
